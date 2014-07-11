@@ -19,7 +19,7 @@
         "installer-paths": {
             "vendor/slim/views/Slim/Views/{$name}": ["vendor/package"]
         }
-    }
+    },
     "scripts": {
 		"post-update-cmd": [
 			"if [ -f \"vendor/slim/views/Slim/Views/Ets.php\" ] then rm vendor/slim/views/Slim/Views/Ets.php fi ",
