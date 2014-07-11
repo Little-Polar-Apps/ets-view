@@ -15,7 +15,6 @@
 	    "slim/slim": ">=2.4.0",
         "php": ">=5.3.0"
     },
-    "target-dir": "Slim/Views",
     "scripts": {
 		"post-update-cmd": [
 			"if [ -f \"vendor/slim/views/Slim/Views/Ets.php\" ] then rm vendor/slim/views/Slim/Views/Ets.php fi ",
