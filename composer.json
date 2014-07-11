@@ -1,0 +1,31 @@
+{
+    "name": "little-polar-apps/ets-view",
+    "type": "library",
+    "description": "PHP Easy Template System View Parser package for the Slim Framework",
+    "keywords": ["templating", "extensions", "slimphp"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ian Tearle",
+            "email": "ian@littlepolarapps.com",
+            "homepage": "http://iantearle.com/"
+        }
+    ],
+    "require": {
+	    "slim/slim": ">=2.4.0",
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Slim\\Views": ""
+        }
+    },
+    "target-dir": "Slim/Views",
+    "scripts": {
+		"post-update-cmd": [
+			"if [ -f \"vendor/slim/views/Slim/Views/Ets.php\" ] then rm vendor/slim/views/Slim/Views/Ets.php fi ",
+			"if [ -f \"vendor/slim/views/Slim/Views/Ets.php\" ] then mv vendor/little-polar-apps/ets-view/Ets.php vendor/slim/views/Slim/Views/  fi"
+		]
+	}
+
+}
