@@ -127,7 +127,7 @@ class Ets extends \Slim\View {
 		$this->content = $this->inject_variables($this->content, $this->user_vars['main']);
 		$this->content = $this->inject_variables($this->content, $this->user_vars['loops']);
 
-		if($this->data->nav) {
+		if($this->data->nav && $this->data->nav->total > 0) {
 			$nav = $this->data->nav;
 			$array['pages'] = $nav;
 			$array['pages']->next = $nav->next('<li><a href="{path}/page/{nr}" class="next">&raquo;</a></li>','<li class="disabled"><a href="{path}/page/{nr}">&raquo;</a></li>');
