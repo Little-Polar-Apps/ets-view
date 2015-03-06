@@ -152,6 +152,19 @@ class Ets extends \Slim\View {
 		}
 	}
 
+	public function add_loop($arg, $name) {
+		$nav = $this->data->{$name};
+		if(is_array($arg)) {
+			$loop[$name] = $nav;
+			foreach($arg as $k => $v) {
+				$loop[$name] = $v;
+			}
+		}
+		$this->content->{$name} = (isset($this->user_vars['main'][$name])) ? array_merge($this->user_vars['main'][$name],$loop) : $loop;
+
+	}
+
+
 
 	/**
 	 * make_header function.
