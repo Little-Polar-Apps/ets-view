@@ -45,7 +45,20 @@
  * @package Ets
  * @author  Ian Tearle (http://iantearle.com)
  */
-class Ets extends \Slim\View {
+
+namespace Slim\Views;
+
+use Psr\Http\Message\ResponseInterface;
+
+class Ets implements \ArrayAccess {
+
+	/**
+     * Default view variables
+     *
+     * @var array
+     */
+    protected $defaultVariables = [];
+
     /**
      * @var string The path to the Smarty code directory WITHOUT the trailing slash
      */
@@ -94,6 +107,7 @@ class Ets extends \Slim\View {
 	public function __construct() {
 		parent::__construct();
 
+
 //		$this->user_vars = $user_vars;
 	}
 
@@ -107,9 +121,9 @@ class Ets extends \Slim\View {
      * @param null $data
      * @return string
      */
-	public function render($template, $data = null) {
+	public function render(ResponseInterface $response, $template, $data = null) {
 
-		$themetemplates = $this->getTemplatesDirectory();
+		$themetemplates = ETS_TEMPLATESPATH;//\_ets::getTemplatesDirectory();
 		if(!class_exists('\_ets')) {
 			if (!is_dir($this->parserDirectory)) {
                 throw new \RuntimeException('Cannot set the Ets lib directory : ' . $this->parserDirectory . '. Directory does not exist.');
@@ -123,12 +137,12 @@ class Ets extends \Slim\View {
 		$this->footer = $this->inject_variables($this->footer, $this->user_vars['loops']);
 		$this->menu = $this->inject_variables($this->menu, $this->user_vars['menu']);
 		$this->menu = $this->inject_variables($this->menu, $this->user_vars['loops']);
-		$this->content->content = $this->data->content;
+		$this->content->content = $this->content;
 		$this->content = $this->inject_variables($this->content, $this->user_vars['main']);
 		$this->content = $this->inject_variables($this->content, $this->user_vars['loops']);
 
-		if($this->data->nav && $this->data->nav->total > 0) {
-			$nav = $this->data->nav;
+		if(isset($this->nav) && $this->nav && $this->nav->total > 0) {
+			$nav = $this->nav;
 			$array['pages'] = $nav;
 			$array['pages']->next = $nav->next('<li><a href="{path}/page/{nr}" class="next">&raquo;</a></li>','<li class="disabled"><a href="{path}/page/{nr}">&raquo;</a></li>');
 			$array['pages']->prev = $nav->previous('<li><a href="{path}/page/{nr}" class="prev">&laquo;</a></li>','<li class="disabled"><a href="{path}/page/{nr}">&laquo;</a></li>');
@@ -141,15 +155,17 @@ class Ets extends \Slim\View {
 
 		if(!is_array($template)) {
 
-			return \_ets::sprintt($this->header, "$themetemplates/@header.tpl.html") . \_ets::sprintt($this->menu, "$themetemplates/@menu.tpl.html") . \_ets::sprintt($this->content, "$themetemplates/@$template") . \_ets::sprintt($this->footer, "$themetemplates/@footer.tpl.html");
+			$response->getBody()->write(\_ets::sprintt($this->header, "$themetemplates/@header.tpl.html") . \_ets::sprintt($this->menu, "$themetemplates/@menu.tpl.html") . \_ets::sprintt($this->content, "$themetemplates/@$template") . \_ets::sprintt($this->footer, "$themetemplates/@footer.tpl.html"));
 
 		} else {
 
 			$template = $template[0];
 
-			return \_ets::sprintt($this->content, "$themetemplates/@$template");
+			$response->getBody()->write(\_ets::sprintt($this->content, "$themetemplates/@$template"));
 
 		}
+
+		return $response;
 	}
 
 	public function add_loop($arg, $name) {
@@ -253,5 +269,74 @@ class Ets extends \Slim\View {
 		}
 		return $tpl_obj;
 	}
+
+	/********************************************************************************
+     * ArrayAccess interface
+     *******************************************************************************/
+    /**
+     * Does this collection have a given key?
+     *
+     * @param  string $key The data key
+     *
+     * @return bool
+     */
+    public function offsetExists($key)
+    {
+        return array_key_exists($key, $this->defaultVariables);
+    }
+    /**
+     * Get collection item for key
+     *
+     * @param string $key The data key
+     *
+     * @return mixed The key's value, or the default value
+     */
+    public function offsetGet($key)
+    {
+        return $this->defaultVariables[$key];
+    }
+    /**
+     * Set collection item
+     *
+     * @param string $key   The data key
+     * @param mixed  $value The data value
+     */
+    public function offsetSet($key, $value)
+    {
+        $this->defaultVariables[$key] = $value;
+    }
+    /**
+     * Remove item from collection
+     *
+     * @param string $key The data key
+     */
+    public function offsetUnset($key)
+    {
+        unset($this->defaultVariables[$key]);
+    }
+    /********************************************************************************
+     * Countable interface
+     *******************************************************************************/
+    /**
+     * Get number of items in collection
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->defaultVariables);
+    }
+    /********************************************************************************
+     * IteratorAggregate interface
+     *******************************************************************************/
+    /**
+     * Get collection iterator
+     *
+     * @return \ArrayIterator
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->defaultVariables);
+    }
 
 }
