@@ -105,10 +105,7 @@ class Ets implements \ArrayAccess {
 	 * @return void
 	 */
 	public function __construct() {
-		parent::__construct();
 
-
-//		$this->user_vars = $user_vars;
 	}
 
 
