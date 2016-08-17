@@ -127,14 +127,15 @@ class Ets implements \ArrayAccess {
             }
             require_once $this->parserDirectory . '/src/ets.php';
 		}
-
-		$this->header = $this->inject_variables($this->header, $this->user_vars['header']);
-		$this->header = $this->inject_variables($this->header, $this->user_vars['loops']);
-		$this->footer = $this->inject_variables($this->footer, $this->user_vars['footer']);
-		$this->footer = $this->inject_variables($this->footer, $this->user_vars['loops']);
-		$this->menu = $this->inject_variables($this->menu, $this->user_vars['menu']);
-		$this->menu = $this->inject_variables($this->menu, $this->user_vars['loops']);
-		$this->content->content = $this->content;
+		if($this->header) {
+ 		$this->header = $this->inject_variables($this->header, $this->user_vars['header']);
+ 		$this->header = $this->inject_variables($this->header, $this->user_vars['loops']);
+ 		}
+ 		$this->footer = $this->inject_variables($this->footer, $this->user_vars['footer']);
+ 		$this->footer = $this->inject_variables($this->footer, $this->user_vars['loops']);
+ 		$this->menu = $this->inject_variables($this->menu, $this->user_vars['menu']);
+ 		$this->menu = $this->inject_variables($this->menu, $this->user_vars['loops']);
+		$this->content = $this->content;
 		$this->content = $this->inject_variables($this->content, $this->user_vars['main']);
 		$this->content = $this->inject_variables($this->content, $this->user_vars['loops']);
 
@@ -158,14 +159,14 @@ class Ets implements \ArrayAccess {
 
 			$template = $template[0];
 
-			$response->getBody()->write(\_ets::sprintt($this->content, "$themetemplates/@$template"));
+			$response->getBody()->write(\_ets::sprintt($this->content, "$themetemplates/$template"));
 
 		}
 
 		return $response;
 	}
 
-	public function add_loop($arg, $name) {
+    public function add_loop($arg, $name) {
 		$nav = $this->data->{$name};
 		if(is_array($arg)) {
 			$loop[$name] = $nav;
@@ -177,8 +178,6 @@ class Ets implements \ArrayAccess {
 
 	}
 
-
-
 	/**
 	 * make_header function.
 	 *
@@ -187,8 +186,6 @@ class Ets implements \ArrayAccess {
 	 * @return void
 	 */
 	public function make_header($header) {
-
-		$themetemplates = $this->getTemplatesDirectory();
 
 		$this->header = $header;
 
@@ -203,8 +200,6 @@ class Ets implements \ArrayAccess {
 	 * @return void
 	 */
 	public function make_footer($footer) {
-
-		$themetemplates = $this->getTemplatesDirectory();
 
 		$footer = $this->inject_variables($footer, $this->user_vars['footer']);
 		$footer = $this->inject_variables($footer, $this->user_vars['loops']);
@@ -228,8 +223,6 @@ class Ets implements \ArrayAccess {
 	 * @return void
 	 */
 	public function make_menu($menu) {
-
-		$themetemplates = $this->getTemplatesDirectory();
 
 		$menu = $this->inject_variables($menu, $this->user_vars['menu']);
 		$menu = $this->inject_variables($menu, $this->user_vars['loops']);
